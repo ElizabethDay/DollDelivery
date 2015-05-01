@@ -1,0 +1,21 @@
+Discovery starting.
+Discovery completed in 278 milliseconds.
+Run starting. Expected test count is: 5
+DeliverySpec:
+A Delivery
+  when empty
+  - should return nothing (57 milliseconds)
+  when has only nodes
+  - should display the first and last node (1 millisecond)
+  when contains no proper route
+  - should display an error (0 milliseconds)
+  when has a sink node
+  - should not route through the sink node (1 millisecond)
+  when has a source node
+  - should not route through the source node (0 milliseconds)
+SetSpec:
+Run completed in 718 milliseconds.
+Total number of tests run: 5
+Suites: completed 3, aborted 0
+Tests: succeeded 5, failed 0, canceled 0, ignored 0, pending 0
+All tests passed.
