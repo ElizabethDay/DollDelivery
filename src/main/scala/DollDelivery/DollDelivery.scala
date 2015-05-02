@@ -7,23 +7,46 @@ package main.scala.DollDelivery
  */
 
 class EdgeMap (edgeList: List[Map[String, Any]]) {
-  var edgeMap = createEdgeMap(edgeList)
   
-  def createEdgeMap(edges: List[Map[String, Any]]): Map[Any, List[Tuple2[Any, Any]]] = {
-    val locations = collection.Set(edges.flatMap(edge => edge get "startLocation") ++ edges.flatMap(edge => edge get "endLocation"): _*)
+  var locationList = scala.collection.Set[Any]()
+  var edgeMap = createEdgeMap(edgeList)
+  var shortestPath = (Int, List())
+  
+  def createEdgeMap(edges: List[Map[String, Any]]): Map[String, List[Tuple2[String, Int]]] = {
+    locationList = collection.Set(edges.flatMap(edge => edge get "startLocation") ++ edges.flatMap(edge => edge get "endLocation"): _*)
     
     val locMap = 
-      locations.foldLeft(Map[Any, List[Tuple2[Any, Any]]]()) ((r,c) =>
-        r + (c -> 
-          (edges.foldLeft(List[Tuple2[Any, Any]]())((z, i) => 
+      locationList.foldLeft(Map[String, List[Tuple2[String, Int]]]()) ((r,c) =>
+        r + (c.asInstanceOf[String] -> 
+          (edges.foldLeft(List[Tuple2[String, Int]]())((z, i) => 
             if ((i.getOrElse("startLocation", "")) == c){
-              ((i.getOrElse("endLocation", "")), (i.getOrElse("distance", 0))) :: z
+              ((i.getOrElse("endLocation", "").asInstanceOf[String]), (i.getOrElse("distance", 0).asInstanceOf[Int])) :: z
             } else z
           ))
         )
       )
      
     return locMap
+  }
+  
+  def findShortestRoute(start: String, end: String) : Map[Any, Any] = {
+    var locationDistances = 
+      locationList.foldLeft(Map[String, Int]())((r, c) => r + (c.asInstanceOf[String] -> (if(c == start) 0 else Int.MaxValue)))
+    djikstras(start, end, edgeMap, Map[String,Int](), List[String]())
+  }
+  
+  def djikstras(current: String, end: String, eMap: Map[String, List[Tuple2[String, Int]]], distances: Map[String, Int], visited: List[String]) : Map [Any, Any] = {
+    val currentNode = eMap.getOrElse(current, List())
+    var distancesList = distances
+    var smallestDistance = Int.MaxValue
+    
+    var dist = 0
+    for(neighbor <- currentNode){  
+      dist = distances.getOrElse(neighbor._1, Int.MaxValue)
+      if (dist < neighbor._2) {distancesList = distancesList + (neighbor._1 -> neighbor._2)}
+      if (dist < smallestDistance ) {smallestDistance = dist}
+    }
+    return Map()
   }
   
 }
