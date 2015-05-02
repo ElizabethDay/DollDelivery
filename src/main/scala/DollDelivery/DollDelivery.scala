@@ -1,20 +1,43 @@
 package main.scala.DollDelivery
 
-import scala.collection.mutable.Map
 
 /**
- * Doll Delivery - implementation of Diijkstra's algorthm in scala
+ * Doll Delivery - implementation of Dijkstra's algorthm in scala
  * @author eday
  */
-object DollDelivery {
-  def FindShortestPath (start:String, end:String, map:List[Map[String, Any]]): Map[String, Any] = {
+
+class EdgeMap (edgeList: List[Map[String, Any]]) {
+  var edgeMap = createEdgeMap(edgeList)
+  
+  def createEdgeMap(edges: List[Map[String, Any]]): Map[Any, List[Tuple2[Any, Any]]] = {
+    val locations = collection.Set(edges.flatMap(edge => edge get "startLocation") ++ edges.flatMap(edge => edge get "endLocation"): _*)
     
+    val locMap = 
+      locations.foldLeft(Map[Any, List[Tuple2[Any, Any]]]()) ((r,c) =>
+        r + (c -> 
+          (edges.foldLeft(List[Tuple2[Any, Any]]())((z, i) => 
+            if ((i.getOrElse("startLocation", "")) == c){
+              ((i.getOrElse("endLocation", "")), (i.getOrElse("distance", 0))) :: z
+            } else z
+          ))
+        )
+      )
+     
+    return locMap
+  }
+  
+}
+
+object DollDelivery {
+  
+  def FindShortestPath (startingLocation: String, targetLocaion: String, edges: List[Map[String, Any]]): Map[String, Any] = {
+    val neighborhoodMap = new EdgeMap(edges)
     
     return Map("distance" -> 31, "path" -> "Kruthika's abode => Brian's apartment => Wesley's condo => Bryce's den => Craig's haunt")
   }
   
   
-  def main(args: Array[String]): Unit = {
+  def main(args: Array[String]){
     val neighborhood = List(
       Map("startLocation" -> "Kruthika's abode", "endLocation" -> "Mark's crib", "distance" -> 9),
       Map("startLocation" -> "Kruthika's abode", "endLocation" -> "Greg's casa", "distance" -> 4),
@@ -39,8 +62,9 @@ object DollDelivery {
       Map("startLocation" -> "Mike's digs", "endLocation" -> "Nathan's flat", "distance" -> 12),
       Map("startLocation" -> "Cam's dwelling", "endLocation" -> "Craig's haunt", "distance" -> 18),
       Map("startLocation" -> "Nathan's flat", "endLocation" -> "Kirk's farm", "distance" -> 3))
+   
+    val path = FindShortestPath("Kruthika's abode", "Craig's haunt", neighborhood)
+    println(path)
   }
-  
- 
 
 }
