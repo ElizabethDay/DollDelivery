@@ -4,6 +4,7 @@ import org.scalatest.FunSpec
 import main.scala.DollDelivery.DollDelivery
 
 class DeliverySpec extends FunSpec {
+
   describe("A Delivery") {
     
     describe("when has only two linked nodes") {
