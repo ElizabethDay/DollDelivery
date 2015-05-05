@@ -32,44 +32,19 @@ class EdgeMap(edgeList: List[Map[String, Any]]) {
     var locationDistances =
       locationList.foldLeft(Map[String, Int]())((r, c) => r + (c.asInstanceOf[String] -> (if (c == start) 0 else Int.MaxValue)))
 
-    Dijkstra[String](edgeMap, List((0, List(start))), end, Set())
+    dijkstra[String](edgeMap, List((0, List(start))), end, Set())
   }
 
-  def djikstras(current: String, end: String, eMap: Map[String, List[Tuple2[String, Int]]], distances: Map[String, Int], unvisited: Map[String, Int], path: List[String]): Map[Any, Any] = {
-    val currentNode = eMap.getOrElse(current, List())
-    var distancesList = distances
-    var smallestDistance = Int.MaxValue
-    var nextNode = ""
-    var currentPath = path
-
-    if (current == end) { return Map("distance" -> distances.getOrElse(current, 0), "path" -> path.reverse.mkString(" => ")) }
-
-    var dist = 0
-    for (neighbor <- currentNode) {
-      dist = distances.getOrElse(neighbor._1, Int.MaxValue)
-      if (dist < neighbor._2) { distancesList = distancesList + (neighbor._1 -> neighbor._2) }
-      if (dist < smallestDistance) {
-        smallestDistance = dist
-        nextNode = neighbor._1
-        if (unvisited.keys.exists(_ == current)) { current :: currentPath }
-      }
-    }
-
-    val leftUnvisited = unvisited - current
-    if (!leftUnvisited.values.exists(_ < Int.MaxValue)) { return Map("distance" -> 0, "path" -> "No path exists") }
-
-    djikstras(nextNode, end, eMap - current, distancesList, leftUnvisited, currentPath)
-  }
-  def Dijkstra[Key](edges: Map[Key, List[(Int, Key)]], trace: List[Path[Key]], end: Key, visited: Set[Key]): Path[Key] = trace match {
+  def dijkstra[Key](edges: Map[Key, List[(Int, Key)]], trace: List[Path[Key]], end: Key, visited: Set[Key]): Path[Key] = trace match {
     case (distance, path) :: trace_remaining => path match {
       case key :: paths_remaining =>
         if (key == end) (distance, path.reverse)
         else {
-          val paths = edges(key).foldLeft(List[Path[Key]]())((r, c) => 
-            case (dist, key) => if (!visited.contains(key)) List(((distance + dist, key) :: path)) else Nil )
+          val paths = edges(key).flatMap {
+            case (dist, key) => if (!visited.contains(key)) List((distance + dist, key :: path)) else Nil }
           val sorted = (paths ++ trace_remaining).sortWith {
             case ((dist1, _), (dist2, _)) => dist1 < dist2 }
-          Dijkstra(edges, sorted, end, visited + key)
+          dijkstra(edges, sorted, end, visited + key)
         }
     }
     case Nil => (0, List())
