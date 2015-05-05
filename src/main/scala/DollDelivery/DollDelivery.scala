@@ -27,7 +27,7 @@ class EdgeMap(edgeList: List[Map[String, Any]]) {
   }
 
   def findShortestRoute(start: String, end: String): (Int, List[String]) = {
-    if (!(locationList.contains(start) && locationList.contains(end))) { return (0, List("No location available")) }
+    if (!(locationList.contains(start) && locationList.contains(end))) { return (0, List("Location does not exist")) }
 
     var locationDistances =
       locationList.foldLeft(Map[String, Int]())((r, c) => r + (c.asInstanceOf[String] -> (if (c == start) 0 else Int.MaxValue)))
