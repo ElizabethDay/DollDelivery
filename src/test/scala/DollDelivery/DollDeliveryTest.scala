@@ -17,7 +17,11 @@ class DeliverySpec extends FunSpec {
     
     describe("when contains no proper route") {
       it("should display an error") {
-        assert(true)
+        assertResult(Map("distance" -> 0, "path" -> "")){
+          DollDelivery.FindShortestPath("a", "e", List(Map("startLocation" -> "a", "endLocation" -> "b", "distance" -> 2),
+                                                       Map("startLocation" -> "b", "endLocation" -> "c", "distance" -> 2),
+                                                       Map("startLocation" -> "d", "endLocation" -> "e", "distance" -> 2)))
+        }
       }
     }
     
