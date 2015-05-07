@@ -11,8 +11,8 @@ class EdgeMap(edgeList: List[Map[String, Any]]) {
 
   var locationList = createLocationList(edgeList)
   var edgeMap = createEdgeMap(edgeList)
-  var shortestPath = (Int, List())
 
+  // Pull all location names from edgeList
   def createLocationList(edges: List[Map[String, Any]]): scala.collection.Set[String] = {
     collection.Set(edges.map(edge => (edge.getOrElse("startLocation", "")).asInstanceOf[String]) ++ edges.map(edge => (edge.getOrElse("endLocation", "")).asInstanceOf[String]): _*)
   }
@@ -29,25 +29,23 @@ class EdgeMap(edgeList: List[Map[String, Any]]) {
   def findShortestRoute(start: String, end: String): (Int, List[String]) = {
     if (!(locationList.contains(start) && locationList.contains(end))) { return (0, List("Location does not exist")) }
 
-    var locationDistances =
-      locationList.foldLeft(Map[String, Int]())((r, c) => r + (c.asInstanceOf[String] -> (if (c == start) 0 else Int.MaxValue)))
-
     dijkstra[String](edgeMap, List((0, List(start))), end, Set())
   }
 
   def dijkstra[Key](edges: Map[Key, List[(Int, Key)]], trace: List[Path[Key]], end: Key, visited: Set[Key]): Path[Key] = trace match {
-    case (distance, path) :: trace_remaining => path match {
-      case key :: paths_remaining =>
-        if (key == end) (distance, path.reverse)
+    case (distance, path) :: remaining_paths =>
+      path match {
+      case node :: end_node =>
+        if (node == end) (distance, path.reverse)
         else {
-          val paths = edges(key).flatMap {
-            case (dist, key) => if (!visited.contains(key)) List((distance + dist, key :: path)) else Nil }
-          val sorted = (paths ++ trace_remaining).sortWith {
+          val paths = edges(node).foldLeft (List[Path[Key]]()) ((z,i) =>
+            if (!visited.contains(i._2)) {(distance + i._1, i._2 :: path) :: z} else Nil)
+          val sorted = (paths ++ remaining_paths).sortWith {
             case ((dist1, _), (dist2, _)) => dist1 < dist2 }
-          dijkstra(edges, sorted, end, visited + key)
+          dijkstra(edges, sorted, end, visited + node)
         }
     }
-    case Nil => (0, List())
+    case otherwise => (0, List())
   }
 }
 
