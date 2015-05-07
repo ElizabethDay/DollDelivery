@@ -40,8 +40,7 @@ class EdgeMap(edgeList: List[Map[String, Any]]) {
         else {
           val paths = edges(node).foldLeft (List[Path[Key]]()) ((z,i) =>
             if (!visited.contains(i._2)) {(distance + i._1, i._2 :: path) :: z} else Nil)
-          val sorted = (paths ++ remaining_paths).sortWith {
-            case ((dist1, _), (dist2, _)) => dist1 < dist2 }
+          val sorted = (paths ++ remaining_paths).sortBy(_._1)
           dijkstra(edges, sorted, end, visited + node)
         }
     }
