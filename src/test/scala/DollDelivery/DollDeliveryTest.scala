@@ -57,5 +57,21 @@ class DeliverySpec extends FunSpec {
         }
       }
     }
+    
+    describe("when an early node has a short route") {
+      it("should find the shorter route that does not include that node") {
+        assertResult(Map("distance" -> 20, "path" -> "a => d => c => f")){
+          DollDelivery.FindShortestPath("a", "f", List(Map("startLocation" -> "a", "endLocation" -> "b", "distance" -> 7),
+                                                       Map("startLocation" -> "a", "endLocation" -> "c", "distance" -> 14),
+                                                       Map("startLocation" -> "a", "endLocation" -> "d", "distance" -> 9),
+                                                       Map("startLocation" -> "b", "endLocation" -> "d", "distance" -> 10),
+                                                       Map("startLocation" -> "b", "endLocation" -> "e", "distance" -> 15),
+                                                       Map("startLocation" -> "c", "endLocation" -> "f", "distance" -> 9),
+                                                       Map("startLocation" -> "d", "endLocation" -> "c", "distance" -> 2),
+                                                       Map("startLocation" -> "d", "endLocation" -> "e", "distance" -> 11),
+                                                       Map("startLocation" -> "e", "endLocation" -> "f", "distance" -> 6)))
+        }
+      }
+    }
   }
 }
