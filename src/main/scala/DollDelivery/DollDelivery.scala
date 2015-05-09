@@ -53,7 +53,15 @@ class EdgeMap(edgeList: List[Map[String, Any]]) {
     dijkstra[String](edgeMap, List((0, List(start))), end, Set())
   }
 
-  def dijkstra[Key](edges: Map[Key, List[(Int, Key)]], trace: List[Path[Key]], end: Key, visited: Set[Key]): Path[Key] = trace match {
+  
+  /** Dijkstra's algorithm implemented in scala 
+   *  @param edges list of all locations and their neighbors
+   *  @param pathList list of unvisited locations to traverse
+   *  @param end the last location to visit
+   *  @param visited Set of names of locations that have been checked
+   *  @return map of locations and their neighbors
+   */
+  def dijkstra[Key](edges: Map[Key, List[(Int, Key)]], pathList: List[Path[Key]], end: Key, visited: Set[Key]): Path[Key] = pathList match {
     case (distance, path) :: remaining_paths =>
       path match {
       case node :: end_node =>
@@ -69,9 +77,19 @@ class EdgeMap(edgeList: List[Map[String, Any]]) {
   }
 }
 
+/** Implementation of Dijkstra's algorithm for delivering dolls between houses */
 object DollDelivery {
-
-  def FindShortestPath(startingLocation: String, targetLocation: String, edges: List[Map[String, Any]]): Map[Any, Any] = {
+  
+  /** Takes a List of a map of start and end points with the distance between them and
+   *  determines the shortest route between a given start and end 
+   *
+   * @param startingLocation name of the start point
+   * @param targetLocation name of the end point
+   * @param edges list of map of start and end points and the distance between them
+   * @return a new Person instance with the age determined by the 
+   *         birthdate and current date. 
+   */
+  def findShortestPath(startingLocation: String, targetLocation: String, edges: List[Map[String, Any]]): Map[Any, Any] = {
     val neighborhoodMap = new EdgeMap(edges)
 
     val finalPath = neighborhoodMap.findShortestRoute(startingLocation, targetLocation)
@@ -105,7 +123,7 @@ object DollDelivery {
       Map("startLocation" -> "Cam's dwelling", "endLocation" -> "Craig's haunt", "distance" -> 18),
       Map("startLocation" -> "Nathan's flat", "endLocation" -> "Kirk's farm", "distance" -> 3))
 
-    val path = FindShortestPath("Kruthika's abode", "Craig's haunt", neighborhood)
+    val path = findShortestPath("Kruthika's abode", "Craig's haunt", neighborhood)
     println(path)
   }
 
