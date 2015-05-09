@@ -5,18 +5,34 @@ package main.scala.DollDelivery
  * @author eday
  */
 
+
+/** A map of routes constructed from a list of routes.
+  *
+  * @constructor create a new map from route list.
+  * @param edgeList list of route beginnings, ends, and distances 
+  */
 class EdgeMap(edgeList: List[Map[String, Any]]) {
 
   type Path[Key] = (Int, List[Key])
 
+  // List of all place names
   var locationList = createLocationList(edgeList)
+  // Map that contains the name of the location as key, and a tuple of locations that
+  //   can be accessed from that location as a value
   var edgeMap = createEdgeMap(edgeList)
 
-  // Pull all location names from edgeList
+  /** Pull all location names from edgeList 
+   *  @param edges list of route beginnings, ends, and distances
+   *  @return list of names of all locations
+   */
   def createLocationList(edges: List[Map[String, Any]]): scala.collection.Set[String] = {
     collection.Set(edges.map(edge => (edge.getOrElse("startLocation", "")).asInstanceOf[String]) ++ edges.map(edge => (edge.getOrElse("endLocation", "")).asInstanceOf[String]): _*)
   }
-
+  
+  /** Create map of locations and their neighbors 
+   *  @param edges list of route beginnings, ends, and distances
+   *  @return map of locations and their neighbors
+   */
   def createEdgeMap(edges: List[Map[String, Any]]): Map[String, List[Tuple2[Int, String]]] = {
     locationList.foldLeft(Map[String, List[Tuple2[Int, String]]]())((r, c) =>
       r + (c.asInstanceOf[String] ->
@@ -26,6 +42,11 @@ class EdgeMap(edgeList: List[Map[String, Any]]) {
           } else z))))
   }
 
+  /** Find shortest route from one location to another 
+   *  @param start name of start location 
+   *  @param end name of end location
+   *  @return map of locations and their neighbors
+   */
   def findShortestRoute(start: String, end: String): (Int, List[String]) = {
     if (!(locationList.contains(start) && locationList.contains(end))) { return (0, List("Location does not exist")) }
 
